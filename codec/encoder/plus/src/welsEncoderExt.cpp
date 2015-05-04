@@ -609,9 +609,16 @@ void CWelsH264SVCEncoder::UpdateStatistics (const int64_t kiCurrentFrameTs, EVid
     const int64_t kiTimeDiff = kiCurrentFrameTs - m_pEncContext->iLastStatisticsLogTs;
     if ((kiTimeDiff > m_pEncContext->iStatisticsLogInterval) || (0 == pStatistics->uiInputFrameCount % 300)) {
       WelsLog (&m_pWelsTrace->m_sLogCtx, WELS_LOG_INFO,
+<<<<<<< HEAD
                "EncoderStatistics: %dx%d, SpeedInMs: %f, fAverageFrameRate=%f, \
                LastFrameRate=%f, LatestBitRate=%d, LastFrameQP=%d, uiInputFrameCount=%d, uiSkippedFrameCount=%d, \
                uiResolutionChangeTimes=%d, uIDRReqNum=%d, uIDRSentNum=%d, uLTRSentNum=NA",
+=======
+               "EncoderStatistics: %dx%d, SpeedInMs: %f, fAverageFrameRate=%f, "
+               "LastFrameRate=%f, LatestBitRate=%d, LastFrameQP=%d, uiInputFrameCount=%d, uiSkippedFrameCount=%d, "
+               "uiResolutionChangeTimes=%d, uIDRReqNum=%d, uIDRSentNum=%d, uLTRSentNum=NA, iTotalEncodedBytes=%" PRId64
+               "at Ts = %" PRId64,
+>>>>>>> 9ac4c82... Add spaces around PRId64 macros in format strings
                pStatistics->uiWidth, pStatistics->uiHeight,
                pStatistics->fAverageFrameSpeedInMs, pStatistics->fAverageFrameRate,
                pStatistics->fLatestFrameRate, pStatistics->uiBitRate, pStatistics->uiAverageFrameQP,

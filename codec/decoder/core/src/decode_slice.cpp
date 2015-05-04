@@ -1341,7 +1341,7 @@ int32_t WelsDecodeMbCavlcISlice (PWelsDecoderContext pCtx, PNalUnit pNalCur, uin
   if (iUsedBits > (pBs->iBits -
                    1)) { //When BS incomplete, as long as find it, SHOULD stop decoding to avoid mosaic or crash.
     WelsLog (& (pCtx->sLogCtx), WELS_LOG_WARNING,
-             "WelsDecodeMbCavlcISlice()::::pBs incomplete, iUsedBits:%"PRId64" > pBs->iBits:%d, MUST stop decoding.",
+             "WelsDecodeMbCavlcISlice()::::pBs incomplete, iUsedBits:%" PRId64 " > pBs->iBits:%d, MUST stop decoding.",
              (int64_t) iUsedBits, pBs->iBits);
     return -1;
   }
@@ -1710,7 +1710,7 @@ int32_t WelsDecodeMbCavlcPSlice (PWelsDecoderContext pCtx, PNalUnit pNalCur, uin
   if (iUsedBits > (pBs->iBits -
                    1)) { //When BS incomplete, as long as find it, SHOULD stop decoding to avoid mosaic or crash.
     WelsLog (& (pCtx->sLogCtx), WELS_LOG_WARNING,
-             "WelsDecodeMbCavlcISlice()::::pBs incomplete, iUsedBits:%"PRId64" > pBs->iBits:%d, MUST stop decoding.",
+             "WelsDecodeMbCavlcISlice()::::pBs incomplete, iUsedBits:%" PRId64 " > pBs->iBits:%d, MUST stop decoding.",
              (int64_t) iUsedBits, pBs->iBits);
     return -1;
   }

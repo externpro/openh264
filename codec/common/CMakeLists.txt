@@ -14,7 +14,7 @@ set(arm_srcs
   arm/intra_pred_common_neon.S
   arm/mc_neon.S
   )
-source_group(arm FILES {arm_srcs})
+source_group(arm FILES ${arm_srcs})
 list(APPEND lib_srcs ${arm_srcs})
 ####################
 set(arm64_srcs
@@ -25,7 +25,7 @@ set(arm64_srcs
   arm64/intra_pred_common_aarch64_neon.S
   arm64/mc_aarch64_neon.S
   )
-source_group(arm64 FILES {arm64_srcs})
+source_group(arm64 FILES ${arm64_srcs})
 list(APPEND lib_srcs ${arm64_srcs})
 ####################
 set(inc_srcs

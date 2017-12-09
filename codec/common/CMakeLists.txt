@@ -1,4 +1,5 @@
 set(lib_name common)
+set(obj_name ${lib_name}_obj)
 ####################
 set(lib_srcs
   generate_version.sh
@@ -15,7 +16,7 @@ set(arm_srcs
   arm/mc_neon.S
   )
 source_group(arm FILES ${arm_srcs})
-list(APPEND lib_srcs ${arm_srcs})
+set(obj_srcs ${arm_srcs})
 ####################
 set(arm64_srcs
   arm64/arm_arch64_common_macro.S
@@ -26,7 +27,7 @@ set(arm64_srcs
   arm64/mc_aarch64_neon.S
   )
 source_group(arm64 FILES ${arm64_srcs})
-list(APPEND lib_srcs ${arm64_srcs})
+list(APPEND obj_srcs ${arm64_srcs})
 ####################
 set(inc_srcs
   inc/copy_mb.h
@@ -52,7 +53,7 @@ set(inc_srcs
   inc/WelsThreadLib.h
   )
 source_group(inc FILES ${inc_srcs})
-list(APPEND lib_srcs ${inc_srcs})
+list(APPEND obj_srcs ${inc_srcs})
 ####################
 set(src_srcs
   src/common_tables.cpp
@@ -70,7 +71,7 @@ set(src_srcs
   src/WelsThreadLib.cpp
   )
 source_group(src FILES ${src_srcs})
-list(APPEND lib_srcs ${src_srcs})
+list(APPEND obj_srcs ${src_srcs})
 ####################
 set(x86_srcs
   x86/asm_inc.asm
@@ -85,10 +86,13 @@ set(x86_srcs
   x86/vaa.asm
   )
 source_group(x86 FILES ${x86_srcs})
-list(APPEND lib_srcs ${x86_srcs})
+list(APPEND obj_srcs ${x86_srcs})
 ####################
-add_library(${lib_name} STATIC ${lib_srcs})
-target_include_directories(${lib_name} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
-  ${codec_SOURCE_DIR}/api/svc
-  )
+set(incDirs $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc> ${codec_SOURCE_DIR}/api/svc)
+##########
+add_library(${obj_name} OBJECT ${obj_srcs})
+target_include_directories(${obj_name} PRIVATE ${incDirs})
+##########
+add_library(${lib_name} STATIC ${lib_srcs} $<TARGET_OBJECTS:${obj_name}>)
+target_include_directories(${lib_name} PUBLIC ${incDirs})
 target_link_libraries(${lib_name} pthread)

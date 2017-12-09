@@ -20,26 +20,6 @@ add_subdirectory(console)
 ####################
 set(lib_name openh264)
 set(lib_deps common decoder processing encoder)
-if(CMAKE_BUILD_TYPE STREQUAL Debug)
-  set(postfix ${CMAKE_DEBUG_POSTFIX})
-elseif(CMAKE_BUILD_TYPE STREQUAL Release)
-  set(postfix ${CMAKE_RELEASE_POSTFIX})
-endif()
-set(bin_name ${CMAKE_STATIC_LIBRARY_PREFIX}${lib_name}${ver}${postfix}${CMAKE_STATIC_LIBRARY_SUFFIX})
-if(WIN32)
-  # NOTE: combining libraries never tested on Windows...
-  set(cmd lib.exe /OUT:${bin_name})
-else()
-  set(cmd ${CMAKE_AR} cqT ${bin_name})
-  set(mri ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}.mri)
-  file(WRITE ${mri} "create ${bin_name}\naddlib ${bin_name}\nsave\nend")
-endif()
-foreach(lib ${lib_deps})
-  list(APPEND cmd $<TARGET_FILE:${lib}>)
-endforeach()
-if(NOT WIN32)
-  list(APPEND cmd COMMAND ${CMAKE_AR} -M <${mri})
-endif()
 set(lib_srcs
   api/svc/codec_api.h
   api/svc/codec_app_def.h
@@ -47,9 +27,18 @@ set(lib_srcs
   api/svc/codec_ver.h
   )
 source_group(api\\svc FILES ${lib_srcs})
-# https://stackoverflow.com/questions/14199708/cmake-include-library-dependencies-in-static-lib
-# https://stackoverflow.com/questions/3821916/how-to-merge-two-ar-static-libraries-into-one
-add_custom_command(OUTPUT ${bin_name} COMMAND ${cmd} DEPENDS ${lib_deps} COMMENT "Combining library ${bin_name}")
-add_custom_target(${lib_name} ALL DEPENDS ${bin_name} SOURCES ${lib_srcs})
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${bin_name} DESTINATION lib)
+##########
+foreach(lib ${lib_deps})
+  list(APPEND obj_libs $<TARGET_OBJECTS:${lib}_obj>)
+endforeach()
+add_library(${lib_name} STATIC ${lib_srcs} ${obj_libs})
+set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
+##########
+set(targetsFile ${lib_name}${ver}-targets)
+install(TARGETS ${lib_name} EXPORT ${targetsFile}
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  )
 install(FILES ${lib_srcs} DESTINATION include${verDir}/wels)
+install(EXPORT ${targetsFile} DESTINATION lib/cmake)

@@ -1,5 +1,6 @@
 set(lib_name processing)
 set(lib_deps common)
+set(obj_name ${lib_name}_obj)
 ####################
 set(lib_srcs
   targets.mk
@@ -10,14 +11,14 @@ set(interface_srcs
   interface/IWelsVP.h
   )
 source_group(interface FILES ${interface_srcs})
-list(APPEND lib_srcs ${interface_srcs})
+set(obj_srcs ${interface_srcs})
 ####################
 set(src_adaptivequantization_srcs
   src/adaptivequantization/AdaptiveQuantization.cpp
   src/adaptivequantization/AdaptiveQuantization.h
   )
 source_group(src\\adaptivequantization FILES ${src_adaptivequantization_srcs})
-list(APPEND lib_srcs ${src_adaptivequantization_srcs})
+list(APPEND obj_srcs ${src_adaptivequantization_srcs})
 ####################
 set(src_arm_srcs
   src/arm/adaptive_quantization.S
@@ -26,7 +27,7 @@ set(src_arm_srcs
   src/arm/vaa_calc_neon.S
   )
 source_group(src\\arm FILES ${src_arm_srcs})
-list(APPEND lib_srcs ${src_arm_srcs})
+list(APPEND obj_srcs ${src_arm_srcs})
 ####################
 set(src_arm64_srcs
   src/arm64/adaptive_quantization_aarch64_neon.S
@@ -35,14 +36,14 @@ set(src_arm64_srcs
   src/arm64/vaa_calc_aarch64_neon.S
   )
 source_group(src\\arm64 FILES ${src_arm64_srcs})
-list(APPEND lib_srcs ${src_arm64_srcs})
+list(APPEND obj_srcs ${src_arm64_srcs})
 ####################
 set(src_backgrounddetection_srcs
   src/backgrounddetection/BackgroundDetection.cpp
   src/backgrounddetection/BackgroundDetection.h
   )
 source_group(src\\backgrounddetection FILES ${src_backgrounddetection_srcs})
-list(APPEND lib_srcs ${src_backgrounddetection_srcs})
+list(APPEND obj_srcs ${src_backgrounddetection_srcs})
 ####################
 set(src_common_srcs
   src/common/common.h
@@ -54,6 +55,11 @@ set(src_common_srcs
   src/common/WelsFrameWork.cpp
   src/common/WelsFrameWorkEx.cpp
   src/common/WelsFrameWork.h
+  )
+source_group(src\\common FILES ${src_common_srcs})
+list(APPEND obj_srcs ${src_common_srcs})
+####################
+set(src_common_srcs
   src/common/WelsVP.def
   src/common/WelsVP.rc
   )
@@ -65,7 +71,7 @@ set(src_complexityanalysis_srcs
   src/complexityanalysis/ComplexityAnalysis.h
   )
 source_group(src\\complexityanalysis FILES ${src_complexityanalysis_srcs})
-list(APPEND lib_srcs ${src_complexityanalysis_srcs})
+list(APPEND obj_srcs ${src_complexityanalysis_srcs})
 ####################
 set(src_denoise_srcs
   src/denoise/denoise.cpp
@@ -73,7 +79,7 @@ set(src_denoise_srcs
   src/denoise/denoise.h
   )
 source_group(src\\denoise FILES ${src_denoise_srcs})
-list(APPEND lib_srcs ${src_denoise_srcs})
+list(APPEND obj_srcs ${src_denoise_srcs})
 ####################
 set(src_downsample_srcs
   src/downsample/downsample.cpp
@@ -81,7 +87,7 @@ set(src_downsample_srcs
   src/downsample/downsample.h
   )
 source_group(src\\downsample FILES ${src_downsample_srcs})
-list(APPEND lib_srcs ${src_downsample_srcs})
+list(APPEND obj_srcs ${src_downsample_srcs})
 ####################
 set(src_imagerotate_srcs
   src/imagerotate/imagerotate.cpp
@@ -89,14 +95,14 @@ set(src_imagerotate_srcs
   src/imagerotate/imagerotate.h
   )
 source_group(src\\imagerotate FILES ${src_imagerotate_srcs})
-list(APPEND lib_srcs ${src_imagerotate_srcs})
+list(APPEND obj_srcs ${src_imagerotate_srcs})
 ####################
 set(src_scenechangedetection_srcs
   src/scenechangedetection/SceneChangeDetection.cpp
   src/scenechangedetection/SceneChangeDetection.h
   )
 source_group(src\\scenechangedetection FILES ${src_scenechangedetection_srcs})
-list(APPEND lib_srcs ${src_scenechangedetection_srcs})
+list(APPEND obj_srcs ${src_scenechangedetection_srcs})
 ####################
 set(src_scrolldetection_srcs
   src/scrolldetection/ScrollDetection.cpp
@@ -105,7 +111,7 @@ set(src_scrolldetection_srcs
   src/scrolldetection/ScrollDetection.h
   )
 source_group(src\\scrolldetection FILES ${src_scrolldetection_srcs})
-list(APPEND lib_srcs ${src_scrolldetection_srcs})
+list(APPEND obj_srcs ${src_scrolldetection_srcs})
 ####################
 set(src_vaacalc_srcs
   src/vaacalc/vaacalcfuncs.cpp
@@ -113,7 +119,7 @@ set(src_vaacalc_srcs
   src/vaacalc/vaacalculation.h
   )
 source_group(src\\vaacalc FILES ${src_vaacalc_srcs})
-list(APPEND lib_srcs ${src_vaacalc_srcs})
+list(APPEND obj_srcs ${src_vaacalc_srcs})
 ####################
 set(src_x86_srcs
   src/x86/denoisefilter.asm
@@ -121,10 +127,18 @@ set(src_x86_srcs
   src/x86/vaa.asm
   )
 source_group(src\\x86 FILES ${src_x86_srcs})
-list(APPEND lib_srcs ${src_x86_srcs})
+list(APPEND obj_srcs ${src_x86_srcs})
 ####################
-add_library(${lib_name} STATIC ${lib_srcs})
-target_include_directories(${lib_name} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/interface>
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/common
+set(incDirs $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/interface>)
+##########
+foreach(lib ${lib_deps})
+  list(APPEND depInc $<TARGET_PROPERTY:${lib},INTERFACE_INCLUDE_DIRECTORIES>)
+endforeach()
+add_library(${obj_name} OBJECT ${obj_srcs})
+target_include_directories(${obj_name} PRIVATE ${incDirs} ${depInc}
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/common
   )
+##########
+add_library(${lib_name} STATIC ${lib_srcs} $<TARGET_OBJECTS:${obj_name}>)
+target_include_directories(${lib_name} PUBLIC ${incDirs})
 target_link_libraries(${lib_name} ${lib_deps})

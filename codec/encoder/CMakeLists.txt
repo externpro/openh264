@@ -1,5 +1,6 @@
 set(lib_name encoder)
 set(lib_deps processing)
+set(obj_name ${lib_name}_obj)
 ####################
 set(lib_srcs
   targets.mk
@@ -15,7 +16,7 @@ set(core_arm_srcs
   core/arm/svc_motion_estimation.S
   )
 source_group(core\\arm FILES ${core_arm_srcs})
-list(APPEND lib_srcs ${core_arm_srcs})
+set(obj_srcs ${core_arm_srcs})
 ####################
 set(core_arm64_srcs
   core/arm64/intra_pred_aarch64_neon.S
@@ -26,7 +27,7 @@ set(core_arm64_srcs
   core/arm64/svc_motion_estimation_aarch64_neon.S
   )
 source_group(core\\arm64 FILES ${core_arm64_srcs})
-list(APPEND lib_srcs ${core_arm64_srcs})
+list(APPEND obj_srcs ${core_arm64_srcs})
 ####################
 set(core_inc_srcs
   core/inc/as264_common.h
@@ -78,7 +79,7 @@ set(core_inc_srcs
   core/inc/wels_transpose_matrix.h
   )
 source_group(core\\inc FILES ${core_inc_srcs})
-list(APPEND lib_srcs ${core_inc_srcs})
+list(APPEND obj_srcs ${core_inc_srcs})
 ####################
 set(core_src_srcs
   core/src/au_set.cpp
@@ -111,7 +112,7 @@ set(core_src_srcs
   core/src/wels_preprocess.cpp
   )
 source_group(core\\src FILES ${core_src_srcs})
-list(APPEND lib_srcs ${core_src_srcs})
+list(APPEND obj_srcs ${core_src_srcs})
 ####################
 set(core_x86_srcs
   core/x86/coeff.asm
@@ -124,22 +125,35 @@ set(core_x86_srcs
   core/x86/score.asm
   )
 source_group(core\\x86 FILES ${core_x86_srcs})
-list(APPEND lib_srcs ${core_x86_srcs})
+list(APPEND obj_srcs ${core_x86_srcs})
 ####################
 set(plus_srcs
   plus/inc/welsEncoderExt.h
+  plus/src/welsEncoderExt.cpp
+  )
+source_group(plus FILES ${plus_srcs})
+list(APPEND obj_srcs ${plus_srcs})
+####################
+set(plus_srcs
   plus/res/resource.h
   plus/res/welsenc.rc
   #plus/src/DllEntry.cpp
   plus/src/wels_enc_export.def
-  plus/src/welsEncoderExt.cpp
   )
 source_group(plus FILES ${plus_srcs})
 list(APPEND lib_srcs ${plus_srcs})
 ####################
-add_library(${lib_name} STATIC ${lib_srcs})
-target_include_directories(${lib_name} PUBLIC
+set(incDirs
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/core/inc>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/plus/inc>
   )
+##########
+foreach(lib ${lib_deps})
+  list(APPEND depInc $<TARGET_PROPERTY:${lib},INTERFACE_INCLUDE_DIRECTORIES>)
+endforeach()
+add_library(${obj_name} OBJECT ${obj_srcs})
+target_include_directories(${obj_name} PRIVATE ${incDirs} ${depInc})
+##########
+add_library(${lib_name} STATIC ${lib_srcs} $<TARGET_OBJECTS:${obj_name}>)
+target_include_directories(${lib_name} PUBLIC ${incDirs})
 target_link_libraries(${lib_name} ${lib_deps})

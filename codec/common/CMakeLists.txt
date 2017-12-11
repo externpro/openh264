@@ -95,4 +95,6 @@ target_include_directories(${obj_name} PRIVATE ${incDirs})
 ##########
 add_library(${lib_name} STATIC ${lib_srcs} $<TARGET_OBJECTS:${obj_name}>)
 target_include_directories(${lib_name} PUBLIC ${incDirs})
-target_link_libraries(${lib_name} pthread)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+target_link_libraries(${lib_name} Threads::Threads)

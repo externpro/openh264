@@ -89,6 +89,9 @@ source_group(x86 FILES ${x86_srcs})
 list(APPEND obj_srcs ${x86_srcs})
 ####################
 set(incDirs $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc> ${codec_SOURCE_DIR}/api/svc)
+if(CMAKE_ASM_NASM_COMPILER_LOADED)
+  list(APPEND incDirs $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/x86>)
+endif()
 ##########
 add_library(${obj_name} OBJECT ${obj_srcs})
 target_include_directories(${obj_name} PRIVATE ${incDirs})

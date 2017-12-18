@@ -1,16 +1,23 @@
 project(codec)
-if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86")
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "AMD64")
   enable_language(ASM_NASM)
   if(CMAKE_ASM_NASM_COMPILER_LOADED)
-    # TRICKY: NASM needs trailing slash https://gitlab.kitware.com/cmake/cmake/issues/12919
-    set(asmInc -I${CMAKE_CURRENT_SOURCE_DIR}/common/x86/)
-    # TRICKY: CMAKE_ASM_NASM_COMPILE_OBJECT is defined in CMakeASM_NASMInformation.cmake as
-    # <CMAKE_ASM_NASM_COMPILER> <INCLUDES> <FLAGS> -f ${CMAKE_ASM_NASM_OBJECT_FORMAT} -o <OBJECT> <SOURCE>
-    string(REPLACE "<INCLUDES> <FLAGS>" "${asmInc} -DUNIX64"
-      CMAKE_ASM_NASM_COMPILE_OBJECT ${CMAKE_ASM_NASM_COMPILE_OBJECT}
-      )
     add_definitions(-DX86_ASM)
+    if(MSVC)
+      add_definitions(-DWIN64)
+    elseif(UNIX)
+      set(asmDef -DUNIX64)
+      # TRICKY: NASM needs trailing slash https://gitlab.kitware.com/cmake/cmake/issues/12919
+      set(asmInc -I${CMAKE_CURRENT_SOURCE_DIR}/common/x86/)
+      # TRICKY: CMAKE_ASM_NASM_COMPILE_OBJECT is defined in CMakeASM_NASMInformation.cmake as
+      # <CMAKE_ASM_NASM_COMPILER> <INCLUDES> <FLAGS> -f ${CMAKE_ASM_NASM_OBJECT_FORMAT} -o <OBJECT> <SOURCE>
+      string(REPLACE "<FLAGS>" "<FLAGS> ${asmDef} ${asmInc}"
+        CMAKE_ASM_NASM_COMPILE_OBJECT ${CMAKE_ASM_NASM_COMPILE_OBJECT}
+        )
+    endif()
   endif()
+else()
+  message(AUTHOR_WARNING "Unsupported CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
 endif()
 add_subdirectory(common)
 add_subdirectory(decoder)

@@ -39,6 +39,7 @@ foreach(lib ${lib_deps})
   list(APPEND obj_libs $<TARGET_OBJECTS:${lib}_obj>)
 endforeach()
 add_library(${lib_name} STATIC ${lib_srcs} ${obj_libs})
+target_include_directories(${lib_name} PUBLIC $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include${verDir}>)
 set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
 ##########
 set(targetsFile ${lib_name}${ver}-targets)
@@ -48,4 +49,7 @@ install(TARGETS ${lib_name} EXPORT ${targetsFile}
   ARCHIVE DESTINATION lib
   )
 install(FILES ${lib_srcs} DESTINATION include${verDir}/wels)
-install(EXPORT ${targetsFile} DESTINATION lib/cmake)
+if(DEFINED XP_NAMESPACE)
+  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
+endif()
+install(EXPORT ${targetsFile} DESTINATION lib/cmake ${nameSpace})

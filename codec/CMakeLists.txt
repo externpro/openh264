@@ -25,7 +25,7 @@ add_subdirectory(processing)
 add_subdirectory(encoder)
 add_subdirectory(console)
 ####################
-set(lib_name openh264)
+set(lib_name ${CMAKE_PROJECT_NAME})
 set(lib_deps common decoder processing encoder)
 set(lib_srcs
   api/svc/codec_api.h
@@ -39,17 +39,16 @@ foreach(lib ${lib_deps})
   list(APPEND obj_libs $<TARGET_OBJECTS:${lib}_obj>)
 endforeach()
 add_library(${lib_name} STATIC ${lib_srcs} ${obj_libs})
-target_include_directories(${lib_name} PUBLIC $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include${verDir}>)
-set_target_properties(${lib_name} PROPERTIES OUTPUT_NAME ${lib_name}${ver})
+target_include_directories(${lib_name} PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 ##########
-set(targetsFile ${lib_name}${ver}-targets)
+set(targetsFile ${lib_name}-targets)
 install(TARGETS ${lib_name} EXPORT ${targetsFile}
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )
-install(FILES ${lib_srcs} DESTINATION include${verDir}/wels)
+install(FILES ${lib_srcs} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/wels)
 if(DEFINED XP_NAMESPACE)
   set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
 endif()
-install(EXPORT ${targetsFile} DESTINATION lib/cmake ${nameSpace})
+install(EXPORT ${targetsFile} DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake ${nameSpace})

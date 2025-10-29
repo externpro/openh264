@@ -47,3 +47,8 @@ testbin/test.yuv
 
 # pkg-config file
 *.pc
+
+# externpro
+.env
+_bld*/
+docker-compose.override.yml

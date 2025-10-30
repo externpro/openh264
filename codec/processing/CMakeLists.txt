@@ -132,6 +132,9 @@ if(CMAKE_ASM_NASM_COMPILER_LOADED)
 endif()
 ####################
 set(incDirs $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/interface>)
+if(CMAKE_ASM_COMPILER_LOADED)
+  list(APPEND incDirs $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/codec/common/arm64>)
+endif()
 ##########
 foreach(lib ${lib_deps})
   list(APPEND depInc $<TARGET_PROPERTY:${lib},INTERFACE_INCLUDE_DIRECTORIES>)

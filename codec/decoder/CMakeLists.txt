@@ -109,6 +109,9 @@ set(incDirs
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/core/inc>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/plus/inc>
   )
+if(CMAKE_ASM_COMPILER_LOADED)
+  list(APPEND incDirs $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/codec/common/arm64>)
+endif()
 ##########
 foreach(lib ${lib_deps})
   list(APPEND depInc $<TARGET_PROPERTY:${lib},INTERFACE_INCLUDE_DIRECTORIES>)

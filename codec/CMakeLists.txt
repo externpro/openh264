@@ -1,5 +1,9 @@
 project(codec)
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "AMD64")
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64")
+  find_package(yasm)
+  xpGetPkgVar(yasm EXE) # sets YASM_EXE
+  get_target_property(yasmExe ${YASM_EXE} LOCATION)
+  set(CMAKE_ASM_NASM_COMPILER ${yasmExe})
   enable_language(ASM_NASM)
   if(CMAKE_ASM_NASM_COMPILER_LOADED)
     add_definitions(-DX86_ASM)

@@ -24,4 +24,7 @@ if(DEFINED XP_NAMESPACE)
   configure_file(${pcFile} ${CMAKE_CURRENT_BINARY_DIR} @ONLY NEWLINE_STYLE LF)
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${pcFile} DESTINATION ${XP_INSTALL_CMAKEDIR})
 endif()
+find_package(yasm)
+xpGetPkgVar(yasm EXE) # sets YASM_EXE
+set(CMAKE_ASM_NASM_COMPILER ${YASM_EXE})
 add_subdirectory(codec)

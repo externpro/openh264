@@ -82,12 +82,14 @@ set(core_src_srcs
 source_group(core\\src FILES ${core_src_srcs})
 list(APPEND obj_srcs ${core_src_srcs})
 ####################
-set(core_x86_srcs
-  core/x86/dct.asm
-  core/x86/intra_pred.asm
-  )
-source_group(core\\x86 FILES ${core_x86_srcs})
-list(APPEND obj_srcs ${core_x86_srcs})
+if(CMAKE_ASM_NASM_COMPILER_LOADED)
+  set(core_x86_srcs
+    core/x86/dct.asm
+    core/x86/intra_pred.asm
+    )
+  source_group(core\\x86 FILES ${core_x86_srcs})
+  list(APPEND obj_srcs ${core_x86_srcs})
+endif()
 ####################
 set(plus_srcs
   plus/inc/welsDecoderExt.h
@@ -107,6 +109,9 @@ set(incDirs
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/core/inc>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/plus/inc>
   )
+if(CMAKE_ASM_COMPILER_LOADED)
+  list(APPEND incDirs $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/codec/common/arm64>)
+endif()
 ##########
 foreach(lib ${lib_deps})
   list(APPEND depInc $<TARGET_PROPERTY:${lib},INTERFACE_INCLUDE_DIRECTORIES>)

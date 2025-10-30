@@ -1,5 +1,9 @@
 project(codec)
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "AMD64")
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64")
+  find_package(yasm)
+  xpGetPkgVar(yasm EXE) # sets YASM_EXE
+  get_target_property(yasmExe ${YASM_EXE} LOCATION)
+  set(CMAKE_ASM_NASM_COMPILER ${yasmExe})
   enable_language(ASM_NASM)
   if(CMAKE_ASM_NASM_COMPILER_LOADED)
     add_definitions(-DX86_ASM)
@@ -15,6 +19,11 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "AM
         CMAKE_ASM_NASM_COMPILE_OBJECT ${CMAKE_ASM_NASM_COMPILE_OBJECT}
         )
     endif()
+  endif()
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64|aarch64")
+  enable_language(ASM)
+  if(CMAKE_ASM_COMPILER_LOADED)
+    add_definitions(-DHAVE_NEON_AARCH64)
   endif()
 else()
   message(AUTHOR_WARNING "Unsupported CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
@@ -41,17 +50,10 @@ endforeach()
 add_library(${lib_name} STATIC ${lib_srcs} ${obj_libs})
 target_include_directories(${lib_name} PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 ##########
-set(targetsFile ${lib_name}-targets)
 install(TARGETS ${lib_name} EXPORT ${targetsFile}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )
 install(FILES ${lib_srcs} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/wels)
-if(DEFINED XP_NAMESPACE)
-  set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
-endif()
-if(NOT DEFINED XP_INSTALL_CMAKEDIR)
-  set(XP_INSTALL_CMAKEDIR ${CMAKE_INSTALL_DATADIR}/cmake)
-endif()
 install(EXPORT ${targetsFile} DESTINATION ${XP_INSTALL_CMAKEDIR} ${nameSpace})

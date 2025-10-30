@@ -121,15 +121,20 @@ set(src_vaacalc_srcs
 source_group(src\\vaacalc FILES ${src_vaacalc_srcs})
 list(APPEND obj_srcs ${src_vaacalc_srcs})
 ####################
-set(src_x86_srcs
-  src/x86/denoisefilter.asm
-  src/x86/downsample_bilinear.asm
-  src/x86/vaa.asm
-  )
-source_group(src\\x86 FILES ${src_x86_srcs})
-list(APPEND obj_srcs ${src_x86_srcs})
+if(CMAKE_ASM_NASM_COMPILER_LOADED)
+  set(src_x86_srcs
+    src/x86/denoisefilter.asm
+    src/x86/downsample_bilinear.asm
+    src/x86/vaa.asm
+    )
+  source_group(src\\x86 FILES ${src_x86_srcs})
+  list(APPEND obj_srcs ${src_x86_srcs})
+endif()
 ####################
 set(incDirs $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/interface>)
+if(CMAKE_ASM_COMPILER_LOADED)
+  list(APPEND incDirs $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/codec/common/arm64>)
+endif()
 ##########
 foreach(lib ${lib_deps})
   list(APPEND depInc $<TARGET_PROPERTY:${lib},INTERFACE_INCLUDE_DIRECTORIES>)

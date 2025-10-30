@@ -26,5 +26,6 @@ if(DEFINED XP_NAMESPACE)
 endif()
 find_package(yasm)
 xpGetPkgVar(yasm EXE) # sets YASM_EXE
-set(CMAKE_ASM_NASM_COMPILER $<TARGET_FILE:${YASM_EXE}>)
+get_target_property(yasmExe ${YASM_EXE} LOCATION)
+set(CMAKE_ASM_NASM_COMPILER ${yasmExe})
 add_subdirectory(codec)

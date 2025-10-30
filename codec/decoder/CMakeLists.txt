@@ -82,12 +82,14 @@ set(core_src_srcs
 source_group(core\\src FILES ${core_src_srcs})
 list(APPEND obj_srcs ${core_src_srcs})
 ####################
-set(core_x86_srcs
-  core/x86/dct.asm
-  core/x86/intra_pred.asm
-  )
-source_group(core\\x86 FILES ${core_x86_srcs})
-list(APPEND obj_srcs ${core_x86_srcs})
+if(CMAKE_ASM_NASM_COMPILER_LOADED)
+  set(core_x86_srcs
+    core/x86/dct.asm
+    core/x86/intra_pred.asm
+    )
+  source_group(core\\x86 FILES ${core_x86_srcs})
+  list(APPEND obj_srcs ${core_x86_srcs})
+endif()
 ####################
 set(plus_srcs
   plus/inc/welsDecoderExt.h

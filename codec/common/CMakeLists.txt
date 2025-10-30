@@ -73,20 +73,22 @@ set(src_srcs
 source_group(src FILES ${src_srcs})
 list(APPEND obj_srcs ${src_srcs})
 ####################
-set(x86_srcs
-  x86/asm_inc.asm
-  x86/cpuid.asm
-  x86/deblock.asm
-  x86/expand_picture.asm
-  x86/intra_pred_com.asm
-  x86/mb_copy.asm
-  x86/mc_chroma.asm
-  x86/mc_luma.asm
-  x86/satd_sad.asm
-  x86/vaa.asm
+if(CMAKE_ASM_NASM_COMPILER_LOADED)
+  set(x86_srcs
+    x86/asm_inc.asm
+    x86/cpuid.asm
+    x86/deblock.asm
+    x86/expand_picture.asm
+    x86/intra_pred_com.asm
+    x86/mb_copy.asm
+    x86/mc_chroma.asm
+    x86/mc_luma.asm
+    x86/satd_sad.asm
+    x86/vaa.asm
   )
-source_group(x86 FILES ${x86_srcs})
-list(APPEND obj_srcs ${x86_srcs})
+  source_group(x86 FILES ${x86_srcs})
+  list(APPEND obj_srcs ${x86_srcs})
+endif()
 ####################
 set(incDirs $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc> ${codec_SOURCE_DIR}/api/svc)
 if(CMAKE_ASM_NASM_COMPILER_LOADED)

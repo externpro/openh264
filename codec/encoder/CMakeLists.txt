@@ -114,18 +114,20 @@ set(core_src_srcs
 source_group(core\\src FILES ${core_src_srcs})
 list(APPEND obj_srcs ${core_src_srcs})
 ####################
-set(core_x86_srcs
-  core/x86/coeff.asm
-  core/x86/dct.asm
-  core/x86/intra_pred.asm
-  core/x86/matrix_transpose.asm
-  core/x86/memzero.asm
-  core/x86/quant.asm
-  core/x86/sample_sc.asm
-  core/x86/score.asm
+if(CMAKE_ASM_NASM_COMPILER_LOADED)
+  set(core_x86_srcs
+    core/x86/coeff.asm
+    core/x86/dct.asm
+    core/x86/intra_pred.asm
+    core/x86/matrix_transpose.asm
+    core/x86/memzero.asm
+    core/x86/quant.asm
+    core/x86/sample_sc.asm
+    core/x86/score.asm
   )
-source_group(core\\x86 FILES ${core_x86_srcs})
-list(APPEND obj_srcs ${core_x86_srcs})
+  source_group(core\\x86 FILES ${core_x86_srcs})
+  list(APPEND obj_srcs ${core_x86_srcs})
+endif()
 ####################
 set(plus_srcs
   plus/inc/welsEncoderExt.h

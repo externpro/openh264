@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.31)
 set(CMAKE_PROJECT_TOP_LEVEL_INCLUDES .devcontainer/cmake/xproinc.cmake)
 project(openh264)
-include(GNUInstallDirs)
-include(xpflags)
 set(lib ${PROJECT_NAME})
 if(DEFINED XP_NAMESPACE)
   set(nameSpace NAMESPACE ${XP_NAMESPACE}::)
